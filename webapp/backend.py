@@ -233,4 +233,4 @@ def root():
     with open("index2.html", "r", encoding="utf-8") as f:
         return f.read()
 if __name__ == "__main__":
-    uvicorn.run(app, host="10.158.92.158", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
