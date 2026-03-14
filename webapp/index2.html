@@ -1,568 +1,872 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>KaikariXpress — Instant | Fast UI</title>
-<meta name="description" content="KaikariXpress — lightning-fast vegetables delivery. Minimal, instant-loading front page." />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaikariXpress - Fresh Delivery</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-log-green:#39B54A;
+            --brand-green: #66BB6A; 
+            --brand-green-dark: #4CAF50;
+            --brand-green-light: #E8F5E9;
+            --brand-dark: #111827;
+            --brand-gray: #6B7280;
+            --brand-bg: #F9FAFB;
+        }
 
-<style>
-  /* -------------------------
-     Minimal system font + reset
-     ------------------------- */
-  :root{
-    --bg:#fbfcfc;
-    --card:#ffffff;
-    --muted:#6b7280;
-    --brand:#00c853;
-    --dark:#0f1724;
-    --glass: rgba(255,255,255,0.6);
-    --radius:14px;
-    --shadow: 0 8px 30px rgba(13,18,25,0.06);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background:
-      radial-gradient(600px 400px at 10% 10%, rgba(0,200,83,0.06), transparent 10%),
-      linear-gradient(180deg,#ffffff 0%, var(--bg) 100%);
-    color:var(--dark);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout:none;
-  }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--brand-bg);
+            color: var(--brand-dark);
+            overflow-x: hidden;
+            padding-bottom: 80px; /* Space for sticky footers */
+        }
 
-  /* ---------- shell ---------- */
-  .wrap{max-width:1100px;margin:28px auto;padding:20px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo-sq{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#ffffff, #f0fff3);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
-  .logo-sq svg{width:40px;height:40px}
-  .brand-title{font-weight:800;line-height:1}
-  .brand-sub{font-size:12px;color:var(--muted);margin-top:-2px}
+        /* --- NAVIGATION --- */
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-link-custom {
+            font-weight: 500; color: var(--brand-dark); margin: 0 10px; cursor: pointer; transition: 0.2s;
+        }
+        .nav-link-custom:hover, .nav-link-custom.active { color: var(--brand-green); }
 
-  /* ---------- search & location ---------- */
-  .controls{display:flex;gap:12px;align-items:center;width:100%}
-  .search{
-    flex:1; display:flex; gap:8px; align-items:center; background:var(--card); padding:10px;border-radius:12px; box-shadow:var(--shadow);
-  }
-  .search input{border:0;outline:0;font-size:16px;background:transparent;width:100%}
-  .loc-btn{background:transparent;border:0;padding:8px;border-radius:10px;cursor:pointer}
-  .loc-line{font-size:12px;color:var(--muted)}
+        /* --- SCREEN ANIMATIONS --- */
+        .screen { display: none; min-height: 90vh; animation: fadeIn 0.3s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ---------- hero ---------- */
-  .hero{display:flex;gap:18px;align-items:center;margin:10px 0 18px;flex-wrap:wrap}
-  .hero-left{flex:1;min-width:260px}
-  .hero-cta{display:flex;gap:10px;align-items:center;margin-top:12px}
-  .btn{background:var(--brand);border:0;color:white;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(0,200,83,0.12)}
-  .btn.ghost{background:transparent;color:var(--dark);border:1px solid rgba(15,23,36,0.06);box-shadow:none}
-  .tag{display:inline-block;background:rgba(0,200,83,0.08);color:var(--brand);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+        /* --- COMPONENTS --- */
+        .auth-container { max-width: 400px; margin: 60px auto; padding: 30px; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .input-group-custom { border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 15px; background: white; display: flex; align-items: center; }
+        .input-group-custom input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 16px; }
+        
+        .btn-primary-custom { background: var(--brand-green); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; width: 100%; transition: 0.2s; }
+        .btn-primary-custom:hover { background: var(--brand-green-dark); }
 
-  /* ---------- categories ---------- */
-  .categories{display:flex;gap:10px;overflow:auto;padding:10px 0 4px;margin-top:6px}
-  .chip{background:linear-gradient(180deg,#fff,#f7fff8);padding:8px 14px;border-radius:999px;box-shadow:0 6px 16px rgba(11,16,20,0.04);cursor:pointer;font-weight:700;white-space:nowrap;border:1px solid rgba(10,10,10,0.02)}
-  .chip.active{background:var(--brand);color:white;box-shadow:0 12px 30px rgba(0,200,83,0.12)}
+        .banner-card { background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-dark) 100%); border-radius: 16px; padding: 40px; color: white; margin-bottom: 30px; }
 
-  /* ---------- products grid ---------- */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:16px}
-  .prod{background:var(--card);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:transform .22s ease, box-shadow .22s ease;cursor:default}
-  .prod:focus-within,.prod:hover{transform:translateY(-6px)}
-  .prod-top{display:flex;gap:12px;align-items:center}
-  .badge-emoji{width:68px;height:68px;border-radius:12px;background:linear-gradient(135deg,#fff,#f0fff3);display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 6px 14px rgba(0,0,0,0.04)}
-  .pmeta{flex:1}
-  .pname{font-weight:800;font-size:15px}
-  .pcat{font-size:12px;color:var(--muted);margin-top:4px}
-  .pfoot{display:flex;justify-content:space-between;align-items:center;gap:10px}
-  .price{font-weight:900;font-size:16px}
-  .sm{font-size:13px;color:var(--muted)}
+        /* --- PRODUCT CARD --- */
+        .product-card { background: white; border-radius: 16px; border: 1px solid #f3f4f6; transition: transform 0.2s; height: 100%; overflow: hidden; position: relative; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .product-img-box { height: 160px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 10px; cursor: pointer;}
+        .product-img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-  /* ---------- cart drawer ---------- */
-  .cart-fab{position:fixed;right:20px;bottom:20px;width:64px;height:64px;border-radius:999px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;box-shadow:0 18px 50px rgba(0,200,83,0.18);cursor:pointer;z-index:1000}
-  .cart-count{position:absolute;top:-6px;right:-6px;background:#ff3b30;color:#fff;padding:6px 8px;border-radius:999px;font-weight:800;font-size:12px;border:2px solid white}
-  .drawer{position:fixed;right:0;top:0;height:100vh;width:360px;max-width:92vw;background:linear-gradient(180deg,#fff,#fbfff8);box-shadow:-20px 0 40px rgba(11,16,20,0.08);transform:translateX(110%);transition:transform .28s cubic-bezier(.2,.9,.2,1);z-index:1200;display:flex;flex-direction:column;padding:18px}
-  .drawer.open{transform:none}
-  .drawer .title{font-weight:800;margin-bottom:12px}
-  .cart-items{flex:1;overflow:auto;padding-right:6px;display:flex;flex-direction:column;gap:10px}
-  .cart-row{display:flex;gap:10px;align-items:center;justify-content:space-between}
-  .qty{display:inline-flex;border-radius:8px;overflow:hidden}
-  .qty button{border:0;background:transparent;padding:6px 8px;cursor:pointer;font-weight:800}
-  .checkout{margin-top:12px}
+        .add-btn-container { width: 90px; height: 36px; z-index: 2; position: relative; }
+        .add-btn-initial { width: 100%; height: 100%; border: 1px solid var(--brand-green); color: var(--brand-green); background: white; border-radius: 8px; font-weight: 700; font-size: 14px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .add-btn-initial:hover { background: var(--brand-green-light); }
+        .qty-control { width: 100%; height: 100%; background: var(--brand-green); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 14px; }
+        .qty-btn { width: 30px; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-  /* ---------- toast ---------- */
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:#0f1724;color:white;padding:12px 18px;border-radius:10px;box-shadow:0 12px 30px rgba(10,10,10,0.12);display:none;z-index:2000}
-  .toast.show{display:block;animation:pop .36s ease}
+        /* --- PRODUCT DETAILS SCREEN --- */
+        .details-header { background: #f9f9f9; padding: 20px; text-align: center; border-radius: 0 0 30px 30px; margin-bottom: 20px; }
+        .details-img { height: 250px; object-fit: contain; mix-blend-mode: multiply; }
+        .nutrient-pill { background: #f0fdf4; color: #166534; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-right: 5px; border: 1px solid #bbf7d0; }
+        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-top: 1px solid #f3f4f6; z-index: 1020; }
 
-  @keyframes pop{from{transform:translateX(-50%) translateY(8px) scale(.98);opacity:0}to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+        /* --- PAYMENT METHODS --- */
+        .payment-card { border: 1px solid #E5E7EB; border-radius: 12px; padding: 15px; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
+        .payment-card:hover { background: var(--brand-bg); }
+        .payment-card.active { border-color: var(--brand-green); background: var(--brand-green-light); }
 
-  /* ---------- small screens ---------- */
-  @media (max-width:720px){
-    .hero{flex-direction:column;align-items:flex-start}
-    .search input{font-size:15px}
-    .drawer{width:100%;max-width:100%}
-  }
-</style>
+        /* --- CATEGORIES --- */
+        .category-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .category-chip { padding: 8px 20px; border-radius: 50px; border: 1px solid #E5E7EB; background: white; color: var(--brand-gray); font-weight: 500; cursor: pointer; white-space: nowrap; }
+        .category-chip.active { background: var(--brand-green-dark); color: white; border-color: var(--brand-green-dark); }
+
+        /* --- CART DRAWER --- */
+        .cart-drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1040; display: none; }
+        .cart-drawer { position: fixed; top: 0; right: -450px; width: 100%; max-width: 450px; height: 100vh; background: white; z-index: 1050; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+        .cart-drawer.open { right: 0; }
+
+        /* --- TOAST --- */
+        #toast-container { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 1100; display: none; }
+        .custom-toast { background: #1f2937; color: white; padding: 12px 24px; border-radius: 50px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; display: flex; align-items: center; gap: 10px; }
+        @keyframes slideUp { from{ transform: translateY(20px); opacity: 0;} to { transform: translateY(0); opacity: 1;} }
+
+        /* Timeline restored */
+        .timeline-item { display: flex; gap: 16px; padding-bottom: 30px; position: relative; }
+        .timeline-line { position: absolute; left: 15px; top: 35px; bottom: 0; width: 2px; background: #E5E7EB; z-index: 1; }
+        .timeline-item:last-child .timeline-line { display: none; }
+        .timeline-icon { width: 32px; height: 32px; border-radius: 50%; background: #E5E7EB; display: flex; align-items: center; justify-content: center; z-index: 2; color: #9CA3AF; }
+        .timeline-icon.active { background: var(--brand-green); color: white; box-shadow: 0 0 0 4px var(--brand-green-light); }
+    </style>
 </head>
-
 <body>
-  <div class="wrap" role="application">
-    <!-- header -->
-    <header aria-label="Top">
-      <div class="brand" title="KaikariXpress — fast veggies">
-        <div class="logo-sq" aria-hidden="true">
-          <!-- small inline SVG logo -->
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="0" y="0" width="24" height="24" rx="6" fill="#ffffff"/>
-            <path d="M6 15c2-2 4-2 6 0" stroke="#00c853" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="16.8" cy="8.5" r="2.6" fill="#00c853"/>
-          </svg>
-        </div>
-        <div>
-          <div class="brand-title">KaikariXpress</div>
-          <div class="brand-sub">Fresh • Local • Rapid</div>
-        </div>
-      </div>
 
-      <div style="min-width:320px;max-width:620px">
-        <div class="controls">
-          <div class="search" role="search" aria-label="Search products">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/></svg>
-            <input id="q" type="search" placeholder="Search vegetables, e.g., tomato" aria-label="Search input"/>
-            <button id="clear" class="loc-btn" title="Clear search" aria-hidden="true" style="display:none">✕</button>
-          </div>
-          <button id="locBtn" class="loc-btn" title="Use location" aria-label="Use my location">
-            <div style="text-align:right">
-              <div style="font-weight:800">Deliver to</div>
-              <div class="loc-line" id="locText">Allow location</div>
-            </div>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- hero -->
-    <section class="hero" aria-labelledby="hero-heading">
-      <div class="hero-left">
-        <div class="tag">INSTANT • <span style="opacity:.8">Minutes</span></div>
-        <h1 id="hero-heading" style="margin:10px 0 0;letter-spacing:-0.4px">Fresh vegetables — lightning fast</h1>
-        <p style="color:var(--muted);margin-top:8px;max-width:640px">Local farms → KaikariXpress → your kitchen. Smooth cart, instant add, easy checkout. Built for speed and delightful micro-interactions.</p>
-
-        <div class="hero-cta">
-          <button class="btn" id="buyNow">Shop Now</button>
-          <button class="btn ghost" id="explore">Explore</button>
-        </div>
-
-        <div class="categories" id="categories" aria-hidden="false" style="margin-top:12px">
-          <!-- category chips injected by JS -->
-        </div>
-      </div>
-
-      <div style="min-width:240px;display:flex;align-items:center;justify-content:center">
-        <!-- simple hero SVG (low-weight) -->
-        <svg width="220" height="160" viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs>
-            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#e8fff0"/><stop offset="1" stop-color="#fff"/></linearGradient>
-          </defs>
-          <rect rx="20" width="220" height="160" fill="url(#g1)"/>
-          <g transform="translate(20,18)" font-size="18" font-family="sans-serif" fill="#00a64f">
-            <text x="0" y="28" font-weight="800">Kaikari</text>
-            <text x="0" y="58" font-weight="900" fill="#00c853">Xpress</text>
-          </g>
-          <!-- three simple veg icons -->
-          <g transform="translate(150,100)" fill="#00c853" opacity="0.95">
-            <rect x="0" y="-10" width="18" height="12" rx="4" />
-            <circle cx="9" cy="-22" r="8" />
-          </g>
-        </svg>
-      </div>
-    </section>
-
-    <!-- product grid (pre-rendered for instant paint) -->
-    <main>
-      <h3 style="margin-top:18px;margin-bottom:6px">Popular near you</h3>
-      <div class="grid" id="grid" aria-live="polite">
-        <!-- Pre-rendered cards (fast first paint) -->
-        <!-- We'll hydrate these in JS; keep structure simple so markup is meaningful without JS -->
-        <article class="prod" data-id="1" tabindex="0" aria-label="Tomato">
-          <div class="prod-top">
-            <div class="badge-emoji">🍅</div>
-            <div class="pmeta">
-              <div class="pname">Tomato</div>
-              <div class="pcat">Vegetable • Local farm</div>
-            </div>
-          </div>
-          <div class="pfoot">
-            <div>
-              <div class="price">₹30</div>
-              <div class="sm">per kg</div>
-            </div>
-            <div>
-              <div class="qty" aria-hidden="true">
-                <button class="dec" title="decrease">−</button>
-                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
-                <button class="inc" title="increase">+</button>
-              </div>
-              <div style="height:6px"></div>
-              <button class="btn" data-add="1">Add</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="prod" data-id="2" tabindex="0" aria-label="Potato">
-          <div class="prod-top">
-            <div class="badge-emoji">🥔</div>
-            <div class="pmeta">
-              <div class="pname">Potato</div>
-              <div class="pcat">Root vegetable</div>
-            </div>
-          </div>
-          <div class="pfoot">
-            <div>
-              <div class="price">₹20</div>
-              <div class="sm">per kg</div>
-            </div>
-            <div>
-              <div class="qty" aria-hidden="true">
-                <button class="dec">−</button>
-                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
-                <button class="inc">+</button>
-              </div>
-              <div style="height:6px"></div>
-              <button class="btn" data-add="2">Add</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="prod" data-id="3" tabindex="0" aria-label="Onion">
-          <div class="prod-top">
-            <div class="badge-emoji">🧅</div>
-            <div class="pmeta">
-              <div class="pname">Onion</div>
-              <div class="pcat">Root vegetable</div>
-            </div>
-          </div>
-          <div class="pfoot">
-            <div>
-              <div class="price">₹40</div>
-              <div class="sm">per kg</div>
-            </div>
-            <div>
-              <div class="qty" aria-hidden="true">
-                <button class="dec">−</button>
-                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
-                <button class="inc">+</button>
-              </div>
-              <div style="height:6px"></div>
-              <button class="btn" data-add="3">Add</button>
-            </div>
-          </div>
-        </article>
-
-        <article class="prod" data-id="4" tabindex="0" aria-label="Carrot">
-          <div class="prod-top">
-            <div class="badge-emoji">🥕</div>
-            <div class="pmeta">
-              <div class="pname">Carrot</div>
-              <div class="pcat">Root vegetable</div>
-            </div>
-          </div>
-          <div class="pfoot">
-            <div>
-              <div class="price">₹50</div>
-              <div class="sm">per kg</div>
-            </div>
-            <div>
-              <div class="qty" aria-hidden="true">
-                <button class="dec">−</button>
-                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
-                <button class="inc">+</button>
-              </div>
-              <div style="height:6px"></div>
-              <button class="btn" data-add="4">Add</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- more cards can be added similarly -->
-      </div>
-    </main>
-  </div>
-
-  <!-- floating cart button -->
-  <div aria-hidden="false" id="cartFab" class="cart-fab" title="Open cart" role="button" tabindex="0">
-    🛒
-    <div id="cartCount" class="cart-count" aria-live="polite" style="display:none">0</div>
-  </div>
-
-  <!-- drawer cart -->
-  <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Cart drawer" aria-hidden="true">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div class="title">Your cart</div>
-      <button id="closeDrawer" class="loc-btn" aria-label="Close cart">✕</button>
-    </div>
-    <div class="cart-items" id="cartItems" role="region" aria-live="polite">
-      <div style="color:var(--muted)">Your cart is empty</div>
+    <div id="toast-container">
+        <div class="custom-toast"><i class="fas fa-check-circle text-success"></i> <span id="toast-message">Action Successful</span></div>
     </div>
 
-    <div style="margin-top:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:700">Total</div><div id="total" style="font-weight:900">₹0</div></div>
-      <div style="display:flex;gap:8px">
-        <button id="checkoutBtn" class="btn" style="flex:1">Checkout</button>
-        <button id="clearCart" class="btn ghost" style="flex:1">Clear</button>
-      </div>
+    <div id="splash-screen" style="position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div class="text-center">
+            <img src="kkx3.png" width="180" class="mb-3" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3081/3081986.png'">
+            <h4 class="fw-bold" style="color: var(--brand-green);">KaikariXpress</h4>
+        </div>
     </div>
-  </aside>
 
-  <div id="toast" class="toast" role="status" aria-live="polite">Message</div>
-
-<script>
-/* =============================
-   Instant, tiny interactive JS
-   ============================= */
-
-/* ---------- initial product data (fast, no network needed) ---------- */
-const PRODUCTS = [
-  {id:1,name:'Tomato',price:30,category:'Vegetable',emoji:'🍅'},
-  {id:2,name:'Potato',price:20,category:'Root',emoji:'🥔'},
-  {id:3,name:'Onion',price:40,category:'Root',emoji:'🧅'},
-  {id:4,name:'Carrot',price:50,category:'Root',emoji:'🥕'},
-  {id:5,name:'Spinach',price:24,category:'Leafy',emoji:'🥬'},
-  {id:6,name:'Cucumber',price:28,category:'Vegetable',emoji:'🥒'},
-];
-
-/* ---------- app state ---------- */
-let CART = JSON.parse(localStorage.getItem('kx_cart') || '[]');
-let SELECTED_CAT = 'All';
-let LOCATION = null;
-
-/* ---------- utilities ---------- */
-const $ = id => document.getElementById(id);
-const q = sel => document.querySelector(sel);
-const format = n => '₹' + (Math.round(n*100)/100).toLocaleString();
-function toast(msg, ms=2200){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), ms) }
-
-/* ---------- hydrate categories ---------- */
-(function initCats(){
-  const cats = Array.from(new Set(PRODUCTS.map(p=>p.category)));
-  const wrap = document.getElementById('categories');
-  ['All', ...cats].forEach(c=>{
-    const el = document.createElement('button');
-    el.className = 'chip' + (c==='All'?' active':'');
-    el.textContent = c;
-    el.setAttribute('aria-pressed', c==='All'?'true':'false');
-    el.onclick = ()=>{ SELECTED_CAT = c; Array.from(wrap.children).forEach(ch=>ch.classList.remove('active')); el.classList.add('active'); el.setAttribute('aria-pressed','true'); renderProducts(); }
-    wrap.appendChild(el);
-  });
-})();
-
-/* ---------- render products (fast paint already has few cards, but this updates dynamic lists) ---------- */
-function renderProducts(){
-  const grid = $('grid');
-  // if grid already contains pre-rendered children, we'll keep them but also ensure they can add to cart.
-  // Simpler: rebuild from PRODUCTS filtered by category/search so user sees consistent state.
-  const qterm = $('q').value.trim().toLowerCase();
-  const list = PRODUCTS.filter(p => (SELECTED_CAT==='All' || p.category===SELECTED_CAT) && (p.name.toLowerCase().includes(qterm) || p.category.toLowerCase().includes(qterm)));
-  grid.innerHTML = '';
-  list.forEach(p=>{
-    const art = document.createElement('article');
-    art.className='prod';
-    art.tabIndex=0;
-    art.dataset.id = p.id;
-    art.innerHTML = `
-      <div class="prod-top">
-        <div class="badge-emoji">${p.emoji}</div>
-        <div class="pmeta">
-          <div class="pname">${p.name}</div>
-          <div class="pcat">${p.category} • Fresh</div>
+    <div id="login-screen" class="screen">
+        <div class="container">
+            <div class="auth-container">
+                <div class="text-center mb-4">
+                    <img src="kkx3.png" width="80" class="mb-3" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3081/3081986.png'">
+                    <h3 class="fw-bold">Welcome Back</h3>
+                    <p class="text-muted small">Login to start ordering fresh produce</p>
+                </div>
+                <div id="phone-view">
+                    <label class="fw-bold small mb-2 text-secondary">Mobile Number</label>
+                    <div class="input-group-custom mb-4">
+                        <span class="fw-bold text-dark me-2">+91</span>
+                        <input type="tel" id="phone-input" placeholder="98765 43210" maxlength="10">
+                    </div>
+                    <button class="btn btn-primary-custom" onclick="sendOTP()">Get OTP</button>
+                </div>
+                <div id="otp-view" style="display: none;">
+                    <label class="fw-bold small mb-2 text-secondary">Enter OTP</label>
+                    <div class="input-group-custom mb-4">
+                        <input type="tel" id="otp-input" placeholder="XXXXXX" maxlength="6" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
+                    </div>
+                    <button class="btn btn-primary-custom mb-3" onclick="verifyOTP()">Verify & Login</button>
+                    <button class="btn w-100 text-muted small" onclick="backToPhone()">Change Number</button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="pfoot">
-        <div>
-          <div class="price">${format(p.price)}</div>
-          <div class="sm">per kg</div>
+    </div>
+
+    <div id="location-screen" class="screen">
+        <div class="container">
+            <div class="auth-container text-center pt-5">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px; background-color: var(--brand-green-light);">
+                    <i class="fas fa-map-marker-alt fa-3x" style="color: var(--brand-green);"></i>
+                </div>
+                <h2 class="fw-bold mb-2">Enable Location</h2>
+                <p class="text-muted mb-4">We need your location to show available fresh produce in your area.</p>
+                <button class="btn btn-primary-custom mb-3" onclick="allowLocation()">Allow Location Access</button>
+                <button class="btn btn-light w-100 fw-bold text-muted" onclick="openAddressModal()">Enter Manually</button>
+            </div>
         </div>
-        <div>
-          <div class="qty" aria-hidden="true">
-            <button class="dec" title="decrease">−</button>
-            <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
-            <button class="inc" title="increase">+</button>
-          </div>
-          <div style="height:6px"></div>
-          <button class="btn add-btn" data-add="${p.id}">Add</button>
+    </div>
+
+    <div id="main-navbar" style="display: none;">
+        <nav class="navbar-custom">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center cursor-pointer" onclick="openAddressModal()">
+                    <div class="d-none d-md-block justify-content-between align-items-center">
+                        <h5 class="fw-bold m-0"><span style="color: black">Kaikari</span><span style="color: var(--brand-log-green);">Xpress</span></h5>
+                    </div>
+                    <div class="ms-3 ps-3 border-start">
+                        <small class="text-muted d-block" style="font-size: 10px; line-height: 1;">Deliver to <i class="fas fa-chevron-down ms-1" style="font-size: 8px;"></i></small>
+                        <span class="fw-bold d-inline-block text-truncate" style="font-size: 13px; max-width: 150px;" id="nav-address-display">Select Location</span>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <span class="nav-link-custom d-none d-md-block" onclick="navigate('home-screen')">Home</span>
+                    <span class="nav-link-custom d-none d-md-block" onclick="navigate('profile-screen')">Profile</span>
+                    <span class="nav-link-custom d-none d-md-block me-3" onclick="navigate('tracking-screen')">Orders</span>
+                    <button class="btn position-relative p-2" onclick="openCart()">
+                        <i class="fas fa-shopping-bag fa-lg text-dark"></i>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div id="home-screen" class="screen">
+        <div class="container py-4">
+            <div class="input-group-custom mb-4 shadow-sm border-0">
+                <i class="fas fa-search text-muted"></i>
+                <input type="text" id="search-input" placeholder="Search vegetables, fruits..." onkeyup="filterProducts()">
+            </div>
+
+            <div class="banner-card">
+                <div class="row align-items-center">
+                    <div class="col-7">
+                        <h2 class="fw-bold display-6">Farm Fresh <br>to Doorstep</h2>
+                        <p class="mb-4 opacity-75 small d-none d-md-block">Use code <strong>FRESH30</strong> for 30% OFF.</p>
+                        <button class="btn btn-light text-success fw-bold rounded-pill px-4 mt-2">Order Now</button>
+                    </div>
+                    <div class="col-5 text-center">
+                         <img src="https://cdn-icons-png.flaticon.com/512/2909/2909787.png" class="img-fluid" style="max-height: 140px;" alt="Veg Basket">
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3">Categories</h5>
+            <div class="category-scroll mb-4">
+                <button class="category-chip active" onclick="filterCategory('all', this)">All Items</button>
+                <button class="category-chip" onclick="filterCategory('Vegetables', this)">Vegetables</button>
+                <button class="category-chip" onclick="filterCategory('Fruits', this)">Fruits</button>
+                <button class="category-chip" onclick="filterCategory('Dairy', this)">Dairy</button>
+                <button class="category-chip" onclick="filterCategory('Bakery', this)">Bakery</button>
+                <button class="category-chip" onclick="filterCategory('Snacks', this)">Snacks</button>
+            </div>
+
+            <div class="row g-3 g-md-4" id="product-list">
+                </div>
         </div>
-      </div>
-    `;
-    grid.appendChild(art);
-  });
-}
+    </div>
 
-/* ---------- cart UI ---------- */
-function saveCart(){ localStorage.setItem('kx_cart', JSON.stringify(CART)); updateCartUI(); }
-function updateCartUI(){
-  const count = CART.reduce((s,i)=>s+i.qty,0);
-  const badge = $('cartCount');
-  if(count>0){ badge.style.display='block'; badge.textContent=count; } else badge.style.display='none';
-  const items = $('cartItems');
-  if(CART.length===0){ items.innerHTML = '<div style="color:var(--muted)">Your cart is empty</div>'; $('total').textContent = format(0); return; }
-  items.innerHTML = '';
-  CART.forEach(it=>{
-    const row = document.createElement('div');
-    row.className='cart-row';
-    row.innerHTML = `
-      <div style="display:flex;gap:10px;align-items:center">
-        <div style="font-size:22px">${it.emoji}</div>
-        <div>
-          <div style="font-weight:800">${it.name}</div>
-          <div class="sm">₹${it.price} • qty ${it.qty}</div>
+    <div id="product-details-screen" class="screen">
+        <div class="container p-0">
+            <div class="d-flex align-items-center justify-content-between p-3 position-absolute w-100" style="z-index: 10;">
+                <button class="btn btn-light rounded-circle shadow-sm" onclick="navigate('home-screen')"><i class="fas fa-arrow-left"></i></button>
+                <button class="btn btn-light rounded-circle shadow-sm" onclick="openCart()"><i class="fas fa-shopping-bag"></i></button>
+            </div>
+            
+            <div class="details-header">
+                <img id="detail-img" src="" class="details-img" alt="Product">
+            </div>
+
+            <div class="px-3 pb-5 mb-5">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h2 class="fw-bold mb-1" id="detail-name">Product Name</h2>
+                        <p class="text-muted" id="detail-weight">1 kg</p>
+                    </div>
+                    <div class="bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold" id="detail-price-badge">₹0</div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-2">Description</h6>
+                    <p class="text-muted small" id="detail-desc">Fresh produce directly from the farm.</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-2">Nutrition Info</h6>
+                    <div class="d-flex flex-wrap" id="detail-nutrients">
+                        </div>
+                </div>
+            </div>
+
+            <div class="sticky-footer d-flex justify-content-between align-items-center">
+                <div class="text-start">
+                    <small class="text-muted d-block">Total Price</small>
+                    <h4 class="fw-bold m-0" id="detail-total-price">₹0</h4>
+                </div>
+                <div id="detail-add-btn-container" style="width: 140px; height: 45px;">
+                    </div>
+            </div>
         </div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        <div style="font-weight:900">${format(it.qty*it.price)}</div>
-        <div style="display:flex;gap:6px">
-          <button class="dec-item" data-id="${it.id}" aria-label="decrease">−</button>
-          <button class="inc-item" data-id="${it.id}" aria-label="increase">+</button>
+    </div>
+
+    <div id="payment-method-screen" class="screen">
+        <div class="container py-4">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-light rounded-circle me-3" onclick="navigate('checkout-screen')"><i class="fas fa-arrow-left"></i></button>
+                <h4 class="fw-bold m-0">Payment Methods</h4>
+            </div>
+
+            <h6 class="fw-bold text-muted mb-3 small uppercase">Recommended</h6>
+            <div class="payment-card active" onclick="selectPaymentMethod('upi')">
+                <div class="me-3"><i class="fas fa-mobile-alt fa-2x text-success"></i></div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold m-0">UPI</h6>
+                    <small class="text-muted">Google Pay, PhonePe, Paytm</small>
+                </div>
+                <i class="fas fa-check-circle text-success fs-5"></i>
+            </div>
+
+            <h6 class="fw-bold text-muted mb-3 mt-4 small uppercase">Cards</h6>
+            <div class="payment-card" onclick="selectPaymentMethod('card')">
+                <div class="me-3"><i class="far fa-credit-card fa-2x text-secondary"></i></div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold m-0">Add Debit / Credit Card</h6>
+                    <small class="text-muted">Save cards for faster checkout</small>
+                </div>
+                <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+
+            <h6 class="fw-bold text-muted mb-3 mt-4 small uppercase">Other Options</h6>
+            <div class="payment-card" onclick="selectPaymentMethod('cod')">
+                <div class="me-3"><i class="fas fa-money-bill-wave fa-2x text-secondary"></i></div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold m-0">Cash on Delivery</h6>
+                    <small class="text-muted">Pay when you receive the order</small>
+                </div>
+                <div class="form-check">
+                     <input class="form-check-input" type="radio" name="payRadio">
+                </div>
+            </div>
+
+            <div class="fixed-bottom p-3 bg-white border-top">
+                <button class="btn btn-primary-custom py-3" onclick="confirmPaymentMethod()">Confirm Payment Method</button>
+            </div>
         </div>
-      </div>
-    `;
-    items.appendChild(row);
-  });
-  const total = CART.reduce((s,i)=>s+i.qty*i.price,0);
-  $('total').textContent = format(total);
-}
+    </div>
 
-/* ---------- cart actions (delegated) ---------- */
-document.addEventListener('click', (e)=>{
-  const add = e.target.closest('[data-add]');
-  if(add){
-    const id = Number(add.getAttribute('data-add'));
-    addToCart(id, 1);
-    return;
-  }
-  if(e.target.classList.contains('inc-item')){
-    const id = Number(e.target.dataset.id); changeQty(id, +1); return;
-  }
-  if(e.target.classList.contains('dec-item')){
-    const id = Number(e.target.dataset.id); changeQty(id, -1); return;
-  }
-});
+    <div id="checkout-screen" class="screen">
+        <div class="container py-4">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-light rounded-circle me-3" onclick="navigate('home-screen')"><i class="fas fa-arrow-left"></i></button>
+                <h4 class="fw-bold m-0">Checkout</h4>
+            </div>
 
-function addToCart(id, qty=1){
-  const prod = PRODUCTS.find(p=>p.id===id);
-  if(!prod) return;
-  const item = CART.find(i=>i.id===id);
-  if(item) item.qty += qty;
-  else CART.push({...prod, qty});
-  saveCart();
-  toast('Added to cart');
-}
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6 class="fw-bold"><i class="fas fa-map-marker-alt me-2 text-success"></i>Delivery Address</h6>
+                            <small class="fw-bold text-success cursor-pointer" onclick="openAddressModal()">Change</small>
+                        </div>
+                        <p class="text-muted small mb-0 ps-4" id="checkout-address-display">Loading...</p>
+                    </div>
 
-function changeQty(id, delta){
-  const it = CART.find(i=>i.id===id);
-  if(!it) return;
-  it.qty += delta;
-  if(it.qty <= 0) CART = CART.filter(x=>x.id!==id);
-  saveCart();
-}
+                    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold m-0">Payment Method</h6>
+                            <button class="btn btn-sm btn-outline-success" onclick="navigate('payment-method-screen')">Change</button>
+                        </div>
+                        <div class="d-flex align-items-center p-3 border rounded-3 bg-light">
+                            <div id="checkout-payment-icon" class="me-3"><i class="fas fa-mobile-alt fa-lg text-success"></i></div>
+                            <div>
+                                <h6 class="fw-bold m-0" id="checkout-payment-name">UPI (GPay/PhonePe)</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm p-4 rounded-4 mb-5">
+                        <h6 class="fw-bold mb-3">Order Summary</h6>
+                        <div id="checkout-items-list" class="mb-3 border-bottom pb-2"></div>
+                        
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="coupon-input" placeholder="Promo Code" style="text-transform: uppercase;">
+                            <button class="btn btn-outline-success" onclick="applyCoupon()">Apply</button>
+                        </div>
+                        <div id="coupon-msg" class="small mb-2 fw-bold text-success" style="display: none;">Coupon Applied!</div>
 
-/* ---------- drawer open/close ---------- */
-const drawer = $('drawer');
-$('cartFab').addEventListener('click', ()=>{ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); updateCartUI(); });
-$('cartFab').addEventListener('keydown', e=>{ if(e.key==='Enter') drawer.classList.add('open') });
-$('closeDrawer').addEventListener('click', ()=>{ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); });
-$('clearCart').addEventListener('click', ()=>{ CART = []; saveCart(); toast('Cart cleared') });
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>Item Total</span>
+                            <span id="checkout-subtotal">₹0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>Discount</span>
+                            <span class="text-success" id="checkout-discount">-₹0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>Delivery Fee</span>
+                            <span class="text-success">FREE</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4 fw-bold fs-5">
+                            <span>To Pay</span>
+                            <span id="checkout-total">₹0</span>
+                        </div>
+                        <button class="btn btn-primary-custom py-3 fs-6" onclick="placeOrder()">Place Order & Pay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-/* ---------- checkout (calls backend if available) ---------- */
-$('checkoutBtn').addEventListener('click', async ()=>{
-  if(CART.length===0){ toast('Cart is empty'); return; }
-  // simple address selection check
-  if(!LOCATION){ // show a lightweight confirm to request location
-    if(!confirm('You have not allowed location. Proceed with checkout without precise location?')) return;
-  }
-  // build simple order payload
-  const items = CART.map(i=>({product_id:i.id, qty:i.qty}));
-  const payload = { address_id: 0, items, location: LOCATION || null };
-  try{
-    const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-    if(res.ok){ const j = await res.json(); CART = []; saveCart(); drawer.classList.remove('open'); toast('Order placed — id ' + (j.order_id||'—')); }
-    else {
-      const j = await res.json().catch(()=>({detail:'server error'}));
-      toast('Order failed: '+(j.detail||'server error'));
-    }
-  }catch(err){
-    // backend not reachable — show offline-friendly behaviour
-    localStorage.setItem('kx_pending_order', JSON.stringify({payload, ts:Date.now()}));
-    CART = []; saveCart(); drawer.classList.remove('open'); toast('Offline: order saved locally. It will be retried from admin panel.');
-  }
-});
+    <div id="tracking-screen" class="screen">
+        <div class="container py-4">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-light rounded-circle me-3" onclick="navigate('home-screen')"><i class="fas fa-home"></i></button>
+                <h4 class="fw-bold m-0">Order Status</h4>
+            </div>
 
-/* ---------- search + small UX ---------- */
-$('q').addEventListener('input', (e)=>{
-  $('clear').style.display = e.target.value ? 'inline-block' : 'none';
-  renderProducts();
-});
-$('clear').addEventListener('click', ()=>{ $('q').value=''; $('clear').style.display='none'; renderProducts(); });
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm mb-4 overflow-hidden rounded-4">
+                        <div class="bg-light p-4 text-center border-bottom">
+                             <h2 class="fw-bold text-success mb-0">14 mins</h2>
+                             <small class="text-muted">Estimated Delivery</small>
+                             <div class="mt-2"><span class="badge bg-white text-dark border shadow-sm px-3 py-2">Order #<span id="order-id-display">--</span></span></div>
+                        </div>
+                        <div class="p-4 bg-white">
+                             <div class="d-flex align-items-center mb-4">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold me-3" style="width: 50px; height: 50px; background-color: var(--brand-green);">RK</div>
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold mb-0">Rajesh Kumar</h6>
+                                    <small class="text-muted">Delivery Partner • <i class="fas fa-star text-warning"></i> 4.8</small>
+                                </div>
+                                <button class="btn btn-outline-success rounded-circle"><i class="fas fa-phone-alt"></i></button>
+                            </div>
+                            <div class="ps-2">
+                                <div class="timeline-item">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-icon active"><i class="fas fa-check"></i></div>
+                                    <div><div class="fw-bold">Order Confirmed</div><small class="text-muted">Placed successfully</small></div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-icon active"><i class="fas fa-box-open"></i></div>
+                                    <div><div class="fw-bold">Packed</div><small class="text-muted">Items packed safely</small></div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-icon active"><i class="fas fa-biking"></i></div>
+                                    <div><div class="fw-bold">On the Way</div><small class="text-muted">Heading to location</small></div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-icon"><i class="fas fa-home"></i></div>
+                                    <div><div class="fw-bold text-muted">Delivered</div><small class="text-muted">Expected soon</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-$('buyNow').addEventListener('click', ()=>{ window.scrollTo({top: document.querySelector('.grid').offsetTop-12, behavior:'smooth'}); });
+    <div id="profile-screen" class="screen">
+        <div class="container py-4">
+            <h4 class="fw-bold mb-4">My Profile</h4>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card border-0 shadow-sm p-4 text-center rounded-4">
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <span class="fs-2 fw-bold text-success">JD</span>
+                        </div>
+                        <h5 class="fw-bold">John Doe</h5>
+                        <p class="text-muted small">+91 98765 43210</p>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="list-group list-group-flush">
+                            <button class="list-group-item list-group-item-action p-3 d-flex align-items-center" onclick="navigate('tracking-screen')">
+                                <i class="fas fa-box text-secondary me-3" style="width: 20px;"></i> 
+                                <span class="fw-medium flex-grow-1">Your Orders</span>
+                                <i class="fas fa-chevron-right text-muted small"></i>
+                            </button>
+                            <button class="list-group-item list-group-item-action p-3 d-flex align-items-center" onclick="openAddressModal()">
+                                <i class="fas fa-map-marker-alt text-secondary me-3" style="width: 20px;"></i> 
+                                <span class="fw-medium flex-grow-1">Address Book</span>
+                                <span class="badge bg-success text-white rounded-pill">Saved</span>
+                            </button>
+                            <button class="list-group-item list-group-item-action p-3 d-flex align-items-center">
+                                <i class="fas fa-wallet text-secondary me-3" style="width: 20px;"></i> 
+                                <span class="fw-medium flex-grow-1">Wallet</span>
+                                <span class="badge bg-success-subtle text-success rounded-pill">₹150</span>
+                            </button>
+                             <button class="list-group-item list-group-item-action p-3 d-flex align-items-center text-danger" onclick="location.reload()">
+                                <i class="fas fa-sign-out-alt text-danger me-3" style="width: 20px;"></i> 
+                                <span class="fw-medium flex-grow-1">Log Out</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-/* ---------- location ---------- */
-$('locBtn').addEventListener('click', ()=>{
-  if(!navigator.geolocation){ toast('Geolocation not supported'); return; }
-  navigator.geolocation.getCurrentPosition((pos)=>{
-    LOCATION = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-    $('locText').textContent = `Lat ${LOCATION.lat.toFixed(3)}, Lng ${LOCATION.lng.toFixed(3)}`;
-    toast('Location detected');
-    // optionally send to backend (best-effort)
-    fetch('/api/location', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(LOCATION) }).catch(()=>{});
-  }, err => {
-    toast('Location permission denied');
-  }, {timeout:8000});
-});
+    <div class="cart-drawer-overlay" id="cart-overlay" onclick="closeCart()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom shadow-sm bg-white">
+            <h5 class="fw-bold m-0">My Cart</h5>
+            <button class="btn-close" onclick="closeCart()"></button>
+        </div>
+        <div class="flex-grow-1 overflow-auto p-3 bg-light" id="cart-drawer-items"></div>
+        <div class="p-3 border-top bg-white shadow-lg">
+            <div class="d-flex justify-content-between mb-3 fw-bold">
+                <span>Total Amount</span>
+                <span id="drawer-total">₹0</span>
+            </div>
+            <button class="btn btn-primary-custom py-3" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
 
-/* ---------- item quantity controls inside each card (delegation for inc/dec in product card) ---------- */
-document.addEventListener('click', (e)=>{
-  const inc = e.target.closest('.inc');
-  const dec = e.target.closest('.dec');
-  if(inc || dec){
-    const card = e.target.closest('.prod');
-    if(!card) return;
-    const viewQty = card.querySelector('.qty > div');
-    let v = Number(viewQty.textContent||'1');
-    v = inc ? v+1 : Math.max(1, v-1);
-    viewQty.textContent = v;
-    // update button "Add" to add v quantity (we set dataset)
-    const addBtn = card.querySelector('[data-add]');
-    if(addBtn) addBtn.dataset.qty = v;
-  }
-});
+    <div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Select Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div id="address-list-container"></div>
+                    
+                    <div id="add-address-form" style="display:none;" class="mt-3 p-3 bg-white rounded shadow-sm border">
+                        <h6 class="fw-bold mb-3">Add New Address</h6>
+                        <div class="mb-2">
+                            <label class="small text-muted">Tag (e.g., Home, Work)</label>
+                            <input type="text" id="new-addr-tag" class="form-control form-control-sm" placeholder="Home">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted">Full Address</label>
+                            <textarea id="new-addr-text" class="form-control form-control-sm" rows="2" placeholder="Street, City, Zip"></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-dark btn-sm flex-grow-1" onclick="saveNewAddress()">Save Address</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="toggleAddAddress(false)">Cancel</button>
+                        </div>
+                    </div>
 
-/* ---------- hydration + first paint friendly ---------- */
-window.addEventListener('DOMContentLoaded', ()=>{
-  renderProducts();
-  updateCartUI();
+                    <button class="btn btn-outline-success w-100 mt-3 border-dashed" id="add-addr-btn" onclick="toggleAddAddress(true)">
+                        <i class="fas fa-plus me-2"></i> Add New Address
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  // small progressive enhancement: try to fetch latest products in background (non-blocking)
-  fetch('/api/products').then(r=>r.json()).then(remote=>{
-    if(Array.isArray(remote) && remote.length>0){
-      // merge remote data lightly with our PRODUCTS by id
-      remote.forEach(rp=>{
-        const idx = PRODUCTS.findIndex(p=>p.id===rp.id);
-        if(idx>=0) PRODUCTS[idx] = {...PRODUCTS[idx], ...rp};
-        else PRODUCTS.push(rp);
-      });
-      renderProducts();
-    }
-  }).catch(()=>{/* silently ignore network error */});
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  // check if pending order exists (from offline checkout)
-  const pend = localStorage.getItem('kx_pending_order');
-  if(pend) toast('You have a pending offline order (will be retried)');
-});
+    <script>
+        // --- 1. EXPANDED DATA CONFIGURATION ---
+        const products = [
+            { id: 1, name: 'Tomato (Local)', weight: '1 kg', price: 28, category: 'Vegetables', desc: 'Fresh, juicy local tomatoes perfect for curries.', nutrients: ['Vitamin C', 'Potassium'], img: 'https://cdn-icons-png.flaticon.com/512/1202/1202125.png' },
+            { id: 2, name: 'Onion (Big)', weight: '1 kg', price: 35, category: 'Vegetables', desc: 'Essential kitchen staple, naturally dried.', nutrients: ['Fiber', 'Iron'], img: 'https://cdn-icons-png.flaticon.com/512/765/765615.png' },
+            { id: 3, name: 'Potato', weight: '1 kg', price: 40, category: 'Vegetables', desc: 'Starchy and versatile potatoes.', nutrients: ['Carbs', 'Vitamin B6'], img: 'https://cdn-icons-png.flaticon.com/512/7396/7396096.png' },
+            { id: 4, name: 'Banana (Yelakki)', weight: '1 kg', price: 65, category: 'Fruits', desc: 'Sweet, small bananas rich in energy.', nutrients: ['Potassium', 'Energy'], img: 'https://cdn-icons-png.flaticon.com/512/2689/2689369.png' },
+            { id: 5, name: 'Apple (Royal Gala)', weight: '4 pcs', price: 120, category: 'Fruits', desc: 'Crisp and sweet apples from Kashmir.', nutrients: ['Vitamin C', 'Fiber'], img: 'https://cdn-icons-png.flaticon.com/512/811/811568.png' },
+            { id: 6, name: 'Carrot', weight: '500g', price: 30, category: 'Vegetables', desc: 'Crunchy orange carrots.', nutrients: ['Vitamin A', 'Beta Carotene'], img: 'https://cdn-icons-png.flaticon.com/512/2836/2836569.png' },
+            { id: 7, name: 'Milk (Fresh)', weight: '500ml', price: 25, category: 'Dairy', desc: 'Pasteurized fresh cow milk.', nutrients: ['Calcium', 'Protein'], img: 'https://cdn-icons-png.flaticon.com/512/919/919833.png' },
+            { id: 8, name: 'Eggs (Hen)', weight: '6 pcs', price: 42, category: 'Dairy', desc: 'Farm fresh white eggs.', nutrients: ['Protein', 'Omega 3'], img: 'https://cdn-icons-png.flaticon.com/512/837/837560.png' },
+            { id: 9, name: 'Broccoli', weight: '1 pc', price: 55, category: 'Vegetables', desc: 'Fresh green broccoli heads.', nutrients: ['Iron', 'Fiber'], img: 'https://cdn-icons-png.flaticon.com/512/2347/2347038.png' },
+            { id: 10, name: 'Spinach', weight: '1 bunch', price: 15, category: 'Vegetables', desc: 'Leafy green spinach.', nutrients: ['Iron', 'Vitamins'], img: 'https://cdn-icons-png.flaticon.com/512/2329/2329883.png' },
+            { id: 11, name: 'Orange', weight: '1 kg', price: 80, category: 'Fruits', desc: 'Citrusy and sweet oranges.', nutrients: ['Vitamin C'], img: 'https://cdn-icons-png.flaticon.com/512/135/135620.png' },
+            { id: 12, name: 'Bread (Whole Wheat)', weight: '400g', price: 40, category: 'Bakery', desc: 'Soft whole wheat sandwich bread.', nutrients: ['Carbs', 'Fiber'], img: 'https://cdn-icons-png.flaticon.com/512/992/992747.png' },
+            { id: 13, name: 'Butter', weight: '100g', price: 58, category: 'Dairy', desc: 'Creamy salted butter.', nutrients: ['Fat'], img: 'https://cdn-icons-png.flaticon.com/512/2403/2403362.png' },
+            { id: 14, name: 'Chips (Salted)', weight: '50g', price: 20, category: 'Snacks', desc: 'Crispy potato chips.', nutrients: ['Carbs'], img: 'https://cdn-icons-png.flaticon.com/512/2553/2553691.png' },
+            { id: 15, name: 'Watermelon', weight: '1 pc', price: 90, category: 'Fruits', desc: 'Juicy red watermelon.', nutrients: ['Hydration'], img: 'https://cdn-icons-png.flaticon.com/512/2224/2224314.png' },
+            { id: 16, name: 'Cookies', weight: '200g', price: 85, category: 'Snacks', desc: 'Choco chip cookies.', nutrients: ['Sugar'], img: 'https://cdn-icons-png.flaticon.com/512/541/541732.png' }
+        ];
 
-/* ---------- keyboard a11y: ESC closes drawer ---------- */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); } });
+        // --- 2. STATE MANAGEMENT ---
+        let cart = {}; 
+        let currentFilter = 'all';
+        let appliedCoupon = null;
+        let selectedPayment = { id: 'upi', name: 'UPI (GPay/PhonePe)', icon: 'fas fa-mobile-alt' };
+        
+        let addresses = JSON.parse(localStorage.getItem('savedAddresses')) || [
+            { id: 1, tag: 'Home', text: '123, Gandhi Road, Tiruppur - 641604', selected: true },
+            { id: 2, tag: 'Work', text: '45, Tech Park, Peelamedu, Coimbatore - 641004', selected: false }
+        ];
 
-</script>
+        // --- 3. LIFECYCLE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+                navigate('login-screen');
+            }, 1500);
+            renderProducts();
+            refreshAddressUI();
+        });
+
+        // --- 4. NAVIGATION & TOAST ---
+        function navigate(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screenId);
+            if(target) target.classList.add('active');
+            
+            const nav = document.getElementById('main-navbar');
+            const hideNavScreens = ['login-screen', 'location-screen', 'splash-screen', 'product-details-screen', 'checkout-screen', 'payment-method-screen'];
+            
+            if(hideNavScreens.includes(screenId)) {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'block';
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-container');
+            document.getElementById('toast-message').innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        // --- 5. ADDRESS LOGIC ---
+        const addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
+
+        function openAddressModal() {
+            renderAddressList();
+            toggleAddAddress(false);
+            addressModal.show();
+        }
+
+        function renderAddressList() {
+            const container = document.getElementById('address-list-container');
+            container.innerHTML = addresses.map((addr, index) => `
+                <div class="address-item ${addr.selected ? 'selected' : ''}" onclick="selectAddress(${index})">
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="fas ${addr.tag.toLowerCase() === 'work' ? 'fa-building' : 'fa-home'} me-2 text-secondary"></i>
+                        <span class="fw-bold text-dark">${addr.tag}</span>
+                        ${addr.selected ? '<span class="address-tag bg-success text-white">Active</span>' : ''}
+                    </div>
+                    <p class="mb-0 small text-muted text-truncate">${addr.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectAddress(index) {
+            addresses.forEach((a, i) => a.selected = (i === index));
+            localStorage.setItem('savedAddresses', JSON.stringify(addresses));
+            refreshAddressUI();
+            addressModal.hide();
+            showToast("Address Updated");
+        }
+
+        function refreshAddressUI() {
+            const active = addresses.find(a => a.selected) || addresses[0];
+            document.getElementById('nav-address-display').innerText = active.text;
+            document.getElementById('checkout-address-display').innerText = active.text;
+        }
+
+        function toggleAddAddress(show) {
+            document.getElementById('add-address-form').style.display = show ? 'block' : 'none';
+            document.getElementById('add-addr-btn').style.display = show ? 'none' : 'block';
+        }
+
+        function saveNewAddress() {
+            const tag = document.getElementById('new-addr-tag').value || 'Other';
+            const text = document.getElementById('new-addr-text').value;
+            if(!text) return alert("Please enter an address");
+
+            const newAddr = { id: Date.now(), tag: tag, text: text, selected: true };
+            addresses.forEach(a => a.selected = false);
+            addresses.push(newAddr);
+            localStorage.setItem('savedAddresses', JSON.stringify(addresses));
+            refreshAddressUI();
+            addressModal.hide();
+            showToast("New Address Added");
+        }
+
+        // --- 6. AUTH & LOCATION ---
+        function sendOTP() {
+            if(document.getElementById('phone-input').value.length === 10) {
+                document.getElementById('phone-view').style.display = 'none';
+                document.getElementById('otp-view').style.display = 'block';
+            } else showToast("Enter valid number");
+        }
+        function verifyOTP() { navigate('location-screen'); }
+        function backToPhone() {
+            document.getElementById('otp-view').style.display = 'none';
+            document.getElementById('phone-view').style.display = 'block';
+        }
+        function allowLocation() {
+            const btn = event.target;
+            const original = btn.innerText;
+            btn.innerText = "Locating...";
+            setTimeout(() => {
+                btn.innerText = original;
+                navigate('home-screen');
+            }, 800);
+        }
+
+        // --- 7. PRODUCT LOGIC (DETAILS & LIST) ---
+        function renderProducts() {
+            const list = document.getElementById('product-list');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filtered = products.filter(p => (currentFilter === 'all' || p.category === currentFilter) && p.name.toLowerCase().includes(search));
+
+            list.innerHTML = filtered.map(p => {
+                const qty = cart[p.id] || 0;
+                let btnHtml = getButtonHtml(p.id, qty);
+                
+                return `
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card d-flex flex-column">
+                        <div class="product-img-box" onclick="openProductDetails(${p.id})">
+                            <img src="${p.img}" alt="${p.name}">
+                        </div>
+                        <div class="p-3 flex-grow-1 d-flex flex-column justify-content-between">
+                            <div onclick="openProductDetails(${p.id})" style="cursor:pointer">
+                                <h6 class="fw-bold mb-1 text-truncate">${p.name}</h6>
+                                <p class="text-muted small mb-3">${p.weight}</p>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold fs-6">₹${p.price}</span>
+                                <div class="add-btn-container" id="card-btn-${p.id}">${btnHtml}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function getButtonHtml(id, qty) {
+            return qty === 0 
+                ? `<div class="add-btn-initial" onclick="updateQty(${id}, 1)">ADD</div>` 
+                : `<div class="qty-control"><div class="qty-btn" onclick="updateQty(${id}, -1)">-</div><span>${qty}</span><div class="qty-btn" onclick="updateQty(${id}, 1)">+</div></div>`;
+        }
+
+        function openProductDetails(id) {
+            const p = products.find(x => x.id === id);
+            if(!p) return;
+
+            // Populate Data
+            document.getElementById('detail-img').src = p.img;
+            document.getElementById('detail-name').innerText = p.name;
+            document.getElementById('detail-weight').innerText = p.weight;
+            document.getElementById('detail-desc').innerText = p.desc || 'No description available';
+            document.getElementById('detail-price-badge').innerText = '₹' + p.price;
+            
+            const nutDiv = document.getElementById('detail-nutrients');
+            nutDiv.innerHTML = (p.nutrients || []).map(n => `<span class="nutrient-pill">${n}</span>`).join('');
+
+            // Set Initial Button State for Detail Page
+            updateDetailButton(p.id);
+
+            navigate('product-details-screen');
+        }
+
+        function updateDetailButton(id) {
+            const qty = cart[id] || 0;
+            const p = products.find(x => x.id === id);
+            
+            // Update Sticky Footer Button
+            document.getElementById('detail-add-btn-container').innerHTML = getButtonHtml(id, qty);
+            
+            // Update Total Price in Footer
+            document.getElementById('detail-total-price').innerText = '₹' + (p.price * (qty || 1)); // Show unit price if 0
+        }
+
+        function updateQty(id, change) {
+            if(!cart[id]) cart[id] = 0;
+            cart[id] += change;
+            if(cart[id] <= 0) delete cart[id];
+            
+            // Update UI across all screens
+            const btnHtml = getButtonHtml(id, cart[id] || 0);
+            
+            // 1. Update Home Card (if visible)
+            const cardBtn = document.getElementById(`card-btn-${id}`);
+            if(cardBtn) cardBtn.innerHTML = btnHtml;
+
+            // 2. Update Details Page (if open)
+            if(document.getElementById('product-details-screen').classList.contains('active')) {
+                updateDetailButton(id);
+            }
+
+            updateCartCalculations();
+        }
+
+        function filterCategory(cat, btn) {
+            currentFilter = cat;
+            document.querySelectorAll('.category-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts();
+        }
+        function filterProducts() { renderProducts(); }
+
+        // --- 8. CART & CHECKOUT & PAYMENT ---
+        function updateCartCalculations() {
+            let total = 0;
+            let count = 0;
+            let html = '';
+            
+            if(Object.keys(cart).length === 0) {
+                html = `<div class="text-center mt-5 opacity-50"><i class="fas fa-shopping-basket fa-3x mb-3"></i><p>Your cart is empty</p></div>`;
+                appliedCoupon = null;
+            } else {
+                for(const [id, qty] of Object.entries(cart)) {
+                    const p = products.find(x => x.id == id);
+                    if(p) {
+                        const itemTotal = p.price * qty;
+                        total += itemTotal;
+                        count += qty;
+                        html += `
+                        <div class="d-flex justify-content-between align-items-center mb-3 bg-white p-2 rounded shadow-sm">
+                            <div class="d-flex align-items-center"><img src="${p.img}" width="40" class="me-3">
+                                <div><h6 class="fw-bold m-0 small">${p.name}</h6><small class="text-muted">${p.weight}</small><div class="fw-bold text-success small">₹${itemTotal}</div></div>
+                            </div>
+                            <div class="add-btn-container" style="width: 70px; height: 30px;">
+                                <div class="qty-control"><div class="qty-btn" onclick="updateQty(${p.id}, -1)">-</div><span style="font-size:12px">${qty}</span><div class="qty-btn" onclick="updateQty(${p.id}, 1)">+</div></div>
+                            </div>
+                        </div>`;
+                    }
+                }
+            }
+
+            let discount = 0;
+            if(appliedCoupon === 'FRESH30') {
+                discount = Math.round(total * 0.3);
+                document.getElementById('coupon-msg').style.display = 'block';
+            } else {
+                document.getElementById('coupon-msg').style.display = 'none';
+            }
+
+            document.getElementById('cart-drawer-items').innerHTML = html;
+            document.getElementById('checkout-items-list').innerHTML = html; 
+            
+            document.getElementById('drawer-total').innerText = '₹' + total;
+            document.getElementById('checkout-subtotal').innerText = '₹' + total;
+            document.getElementById('checkout-discount').innerText = '-₹' + discount;
+            document.getElementById('checkout-total').innerText = '₹' + (total - discount);
+
+            const badge = document.getElementById('cart-badge');
+            badge.innerText = count;
+            badge.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        // --- Payment Method Logic ---
+        function selectPaymentMethod(type) {
+            document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('active'));
+            // Visual selection logic
+            const cards = document.querySelectorAll('.payment-card');
+            if(type === 'upi') {
+                cards[0].classList.add('active');
+                selectedPayment = { id: 'upi', name: 'UPI (GPay/PhonePe)', icon: 'fas fa-mobile-alt' };
+            } else if(type === 'card') {
+                cards[1].classList.add('active');
+                selectedPayment = { id: 'card', name: '**** 4589 (HDFC)', icon: 'far fa-credit-card' }; // Simulated
+            } else {
+                cards[2].classList.add('active');
+                selectedPayment = { id: 'cod', name: 'Cash on Delivery', icon: 'fas fa-money-bill-wave' };
+            }
+        }
+
+        function confirmPaymentMethod() {
+            // Update Checkout UI
+            document.getElementById('checkout-payment-name').innerText = selectedPayment.name;
+            document.getElementById('checkout-payment-icon').innerHTML = `<i class="${selectedPayment.icon} fa-lg ${selectedPayment.id === 'card' ? 'text-secondary' : 'text-success'}"></i>`;
+            navigate('checkout-screen');
+            showToast("Payment Method Updated");
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('coupon-input').value.toUpperCase();
+            if(code === 'FRESH30') {
+                appliedCoupon = code;
+                updateCartCalculations();
+                showToast("Coupon Applied Successfully!");
+            } else {
+                showToast("Invalid Coupon Code");
+            }
+        }
+
+        function openCart() {
+            document.getElementById('cart-overlay').style.display = 'block';
+            document.getElementById('cart-drawer').classList.add('open');
+        }
+        function closeCart() {
+            document.getElementById('cart-overlay').style.display = 'none';
+            document.getElementById('cart-drawer').classList.remove('open');
+        }
+        function proceedToCheckout() {
+            if(Object.keys(cart).length === 0) return showToast("Cart is empty!");
+            closeCart();
+            navigate('checkout-screen');
+        }
+        function placeOrder() {
+            const orderId = Math.floor(Math.random() * 90000) + 10000;
+            document.getElementById('order-id-display').innerText = orderId;
+            cart = {};
+            updateCartCalculations();
+            renderProducts();
+            navigate('tracking-screen');
+        }
+    </script>
 </body>
 </html>
