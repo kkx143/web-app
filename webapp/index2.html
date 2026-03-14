@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>KaikariXpress — Instant | Fast UI</title>
+<meta name="description" content="KaikariXpress — lightning-fast vegetables delivery. Minimal, instant-loading front page." />
+
+<style>
+  /* -------------------------
+     Minimal system font + reset
+     ------------------------- */
+  :root{
+    --bg:#fbfcfc;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --brand:#00c853;
+    --dark:#0f1724;
+    --glass: rgba(255,255,255,0.6);
+    --radius:14px;
+    --shadow: 0 8px 30px rgba(13,18,25,0.06);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:
+      radial-gradient(600px 400px at 10% 10%, rgba(0,200,83,0.06), transparent 10%),
+      linear-gradient(180deg,#ffffff 0%, var(--bg) 100%);
+    color:var(--dark);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout:none;
+  }
+
+  /* ---------- shell ---------- */
+  .wrap{max-width:1100px;margin:28px auto;padding:20px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo-sq{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#ffffff, #f0fff3);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+  .logo-sq svg{width:40px;height:40px}
+  .brand-title{font-weight:800;line-height:1}
+  .brand-sub{font-size:12px;color:var(--muted);margin-top:-2px}
+
+  /* ---------- search & location ---------- */
+  .controls{display:flex;gap:12px;align-items:center;width:100%}
+  .search{
+    flex:1; display:flex; gap:8px; align-items:center; background:var(--card); padding:10px;border-radius:12px; box-shadow:var(--shadow);
+  }
+  .search input{border:0;outline:0;font-size:16px;background:transparent;width:100%}
+  .loc-btn{background:transparent;border:0;padding:8px;border-radius:10px;cursor:pointer}
+  .loc-line{font-size:12px;color:var(--muted)}
+
+  /* ---------- hero ---------- */
+  .hero{display:flex;gap:18px;align-items:center;margin:10px 0 18px;flex-wrap:wrap}
+  .hero-left{flex:1;min-width:260px}
+  .hero-cta{display:flex;gap:10px;align-items:center;margin-top:12px}
+  .btn{background:var(--brand);border:0;color:white;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(0,200,83,0.12)}
+  .btn.ghost{background:transparent;color:var(--dark);border:1px solid rgba(15,23,36,0.06);box-shadow:none}
+  .tag{display:inline-block;background:rgba(0,200,83,0.08);color:var(--brand);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+
+  /* ---------- categories ---------- */
+  .categories{display:flex;gap:10px;overflow:auto;padding:10px 0 4px;margin-top:6px}
+  .chip{background:linear-gradient(180deg,#fff,#f7fff8);padding:8px 14px;border-radius:999px;box-shadow:0 6px 16px rgba(11,16,20,0.04);cursor:pointer;font-weight:700;white-space:nowrap;border:1px solid rgba(10,10,10,0.02)}
+  .chip.active{background:var(--brand);color:white;box-shadow:0 12px 30px rgba(0,200,83,0.12)}
+
+  /* ---------- products grid ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:16px}
+  .prod{background:var(--card);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:transform .22s ease, box-shadow .22s ease;cursor:default}
+  .prod:focus-within,.prod:hover{transform:translateY(-6px)}
+  .prod-top{display:flex;gap:12px;align-items:center}
+  .badge-emoji{width:68px;height:68px;border-radius:12px;background:linear-gradient(135deg,#fff,#f0fff3);display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 6px 14px rgba(0,0,0,0.04)}
+  .pmeta{flex:1}
+  .pname{font-weight:800;font-size:15px}
+  .pcat{font-size:12px;color:var(--muted);margin-top:4px}
+  .pfoot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .price{font-weight:900;font-size:16px}
+  .sm{font-size:13px;color:var(--muted)}
+
+  /* ---------- cart drawer ---------- */
+  .cart-fab{position:fixed;right:20px;bottom:20px;width:64px;height:64px;border-radius:999px;background:var(--brand);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;box-shadow:0 18px 50px rgba(0,200,83,0.18);cursor:pointer;z-index:1000}
+  .cart-count{position:absolute;top:-6px;right:-6px;background:#ff3b30;color:#fff;padding:6px 8px;border-radius:999px;font-weight:800;font-size:12px;border:2px solid white}
+  .drawer{position:fixed;right:0;top:0;height:100vh;width:360px;max-width:92vw;background:linear-gradient(180deg,#fff,#fbfff8);box-shadow:-20px 0 40px rgba(11,16,20,0.08);transform:translateX(110%);transition:transform .28s cubic-bezier(.2,.9,.2,1);z-index:1200;display:flex;flex-direction:column;padding:18px}
+  .drawer.open{transform:none}
+  .drawer .title{font-weight:800;margin-bottom:12px}
+  .cart-items{flex:1;overflow:auto;padding-right:6px;display:flex;flex-direction:column;gap:10px}
+  .cart-row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .qty{display:inline-flex;border-radius:8px;overflow:hidden}
+  .qty button{border:0;background:transparent;padding:6px 8px;cursor:pointer;font-weight:800}
+  .checkout{margin-top:12px}
+
+  /* ---------- toast ---------- */
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:#0f1724;color:white;padding:12px 18px;border-radius:10px;box-shadow:0 12px 30px rgba(10,10,10,0.12);display:none;z-index:2000}
+  .toast.show{display:block;animation:pop .36s ease}
+
+  @keyframes pop{from{transform:translateX(-50%) translateY(8px) scale(.98);opacity:0}to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+
+  /* ---------- small screens ---------- */
+  @media (max-width:720px){
+    .hero{flex-direction:column;align-items:flex-start}
+    .search input{font-size:15px}
+    .drawer{width:100%;max-width:100%}
+  }
+</style>
+</head>
+
+<body>
+  <div class="wrap" role="application">
+    <!-- header -->
+    <header aria-label="Top">
+      <div class="brand" title="KaikariXpress — fast veggies">
+        <div class="logo-sq" aria-hidden="true">
+          <!-- small inline SVG logo -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="0" y="0" width="24" height="24" rx="6" fill="#ffffff"/>
+            <path d="M6 15c2-2 4-2 6 0" stroke="#00c853" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16.8" cy="8.5" r="2.6" fill="#00c853"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">KaikariXpress</div>
+          <div class="brand-sub">Fresh • Local • Rapid</div>
+        </div>
+      </div>
+
+      <div style="min-width:320px;max-width:620px">
+        <div class="controls">
+          <div class="search" role="search" aria-label="Search products">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <input id="q" type="search" placeholder="Search vegetables, e.g., tomato" aria-label="Search input"/>
+            <button id="clear" class="loc-btn" title="Clear search" aria-hidden="true" style="display:none">✕</button>
+          </div>
+          <button id="locBtn" class="loc-btn" title="Use location" aria-label="Use my location">
+            <div style="text-align:right">
+              <div style="font-weight:800">Deliver to</div>
+              <div class="loc-line" id="locText">Allow location</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- hero -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-left">
+        <div class="tag">INSTANT • <span style="opacity:.8">Minutes</span></div>
+        <h1 id="hero-heading" style="margin:10px 0 0;letter-spacing:-0.4px">Fresh vegetables — lightning fast</h1>
+        <p style="color:var(--muted);margin-top:8px;max-width:640px">Local farms → KaikariXpress → your kitchen. Smooth cart, instant add, easy checkout. Built for speed and delightful micro-interactions.</p>
+
+        <div class="hero-cta">
+          <button class="btn" id="buyNow">Shop Now</button>
+          <button class="btn ghost" id="explore">Explore</button>
+        </div>
+
+        <div class="categories" id="categories" aria-hidden="false" style="margin-top:12px">
+          <!-- category chips injected by JS -->
+        </div>
+      </div>
+
+      <div style="min-width:240px;display:flex;align-items:center;justify-content:center">
+        <!-- simple hero SVG (low-weight) -->
+        <svg width="220" height="160" viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#e8fff0"/><stop offset="1" stop-color="#fff"/></linearGradient>
+          </defs>
+          <rect rx="20" width="220" height="160" fill="url(#g1)"/>
+          <g transform="translate(20,18)" font-size="18" font-family="sans-serif" fill="#00a64f">
+            <text x="0" y="28" font-weight="800">Kaikari</text>
+            <text x="0" y="58" font-weight="900" fill="#00c853">Xpress</text>
+          </g>
+          <!-- three simple veg icons -->
+          <g transform="translate(150,100)" fill="#00c853" opacity="0.95">
+            <rect x="0" y="-10" width="18" height="12" rx="4" />
+            <circle cx="9" cy="-22" r="8" />
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- product grid (pre-rendered for instant paint) -->
+    <main>
+      <h3 style="margin-top:18px;margin-bottom:6px">Popular near you</h3>
+      <div class="grid" id="grid" aria-live="polite">
+        <!-- Pre-rendered cards (fast first paint) -->
+        <!-- We'll hydrate these in JS; keep structure simple so markup is meaningful without JS -->
+        <article class="prod" data-id="1" tabindex="0" aria-label="Tomato">
+          <div class="prod-top">
+            <div class="badge-emoji">🍅</div>
+            <div class="pmeta">
+              <div class="pname">Tomato</div>
+              <div class="pcat">Vegetable • Local farm</div>
+            </div>
+          </div>
+          <div class="pfoot">
+            <div>
+              <div class="price">₹30</div>
+              <div class="sm">per kg</div>
+            </div>
+            <div>
+              <div class="qty" aria-hidden="true">
+                <button class="dec" title="decrease">−</button>
+                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
+                <button class="inc" title="increase">+</button>
+              </div>
+              <div style="height:6px"></div>
+              <button class="btn" data-add="1">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="prod" data-id="2" tabindex="0" aria-label="Potato">
+          <div class="prod-top">
+            <div class="badge-emoji">🥔</div>
+            <div class="pmeta">
+              <div class="pname">Potato</div>
+              <div class="pcat">Root vegetable</div>
+            </div>
+          </div>
+          <div class="pfoot">
+            <div>
+              <div class="price">₹20</div>
+              <div class="sm">per kg</div>
+            </div>
+            <div>
+              <div class="qty" aria-hidden="true">
+                <button class="dec">−</button>
+                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
+                <button class="inc">+</button>
+              </div>
+              <div style="height:6px"></div>
+              <button class="btn" data-add="2">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="prod" data-id="3" tabindex="0" aria-label="Onion">
+          <div class="prod-top">
+            <div class="badge-emoji">🧅</div>
+            <div class="pmeta">
+              <div class="pname">Onion</div>
+              <div class="pcat">Root vegetable</div>
+            </div>
+          </div>
+          <div class="pfoot">
+            <div>
+              <div class="price">₹40</div>
+              <div class="sm">per kg</div>
+            </div>
+            <div>
+              <div class="qty" aria-hidden="true">
+                <button class="dec">−</button>
+                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
+                <button class="inc">+</button>
+              </div>
+              <div style="height:6px"></div>
+              <button class="btn" data-add="3">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="prod" data-id="4" tabindex="0" aria-label="Carrot">
+          <div class="prod-top">
+            <div class="badge-emoji">🥕</div>
+            <div class="pmeta">
+              <div class="pname">Carrot</div>
+              <div class="pcat">Root vegetable</div>
+            </div>
+          </div>
+          <div class="pfoot">
+            <div>
+              <div class="price">₹50</div>
+              <div class="sm">per kg</div>
+            </div>
+            <div>
+              <div class="qty" aria-hidden="true">
+                <button class="dec">−</button>
+                <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
+                <button class="inc">+</button>
+              </div>
+              <div style="height:6px"></div>
+              <button class="btn" data-add="4">Add</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- more cards can be added similarly -->
+      </div>
+    </main>
+  </div>
+
+  <!-- floating cart button -->
+  <div aria-hidden="false" id="cartFab" class="cart-fab" title="Open cart" role="button" tabindex="0">
+    🛒
+    <div id="cartCount" class="cart-count" aria-live="polite" style="display:none">0</div>
+  </div>
+
+  <!-- drawer cart -->
+  <aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Cart drawer" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="title">Your cart</div>
+      <button id="closeDrawer" class="loc-btn" aria-label="Close cart">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems" role="region" aria-live="polite">
+      <div style="color:var(--muted)">Your cart is empty</div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:700">Total</div><div id="total" style="font-weight:900">₹0</div></div>
+      <div style="display:flex;gap:8px">
+        <button id="checkoutBtn" class="btn" style="flex:1">Checkout</button>
+        <button id="clearCart" class="btn ghost" style="flex:1">Clear</button>
+      </div>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">Message</div>
+
+<script>
+/* =============================
+   Instant, tiny interactive JS
+   ============================= */
+
+/* ---------- initial product data (fast, no network needed) ---------- */
+const PRODUCTS = [
+  {id:1,name:'Tomato',price:30,category:'Vegetable',emoji:'🍅'},
+  {id:2,name:'Potato',price:20,category:'Root',emoji:'🥔'},
+  {id:3,name:'Onion',price:40,category:'Root',emoji:'🧅'},
+  {id:4,name:'Carrot',price:50,category:'Root',emoji:'🥕'},
+  {id:5,name:'Spinach',price:24,category:'Leafy',emoji:'🥬'},
+  {id:6,name:'Cucumber',price:28,category:'Vegetable',emoji:'🥒'},
+];
+
+/* ---------- app state ---------- */
+let CART = JSON.parse(localStorage.getItem('kx_cart') || '[]');
+let SELECTED_CAT = 'All';
+let LOCATION = null;
+
+/* ---------- utilities ---------- */
+const $ = id => document.getElementById(id);
+const q = sel => document.querySelector(sel);
+const format = n => '₹' + (Math.round(n*100)/100).toLocaleString();
+function toast(msg, ms=2200){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), ms) }
+
+/* ---------- hydrate categories ---------- */
+(function initCats(){
+  const cats = Array.from(new Set(PRODUCTS.map(p=>p.category)));
+  const wrap = document.getElementById('categories');
+  ['All', ...cats].forEach(c=>{
+    const el = document.createElement('button');
+    el.className = 'chip' + (c==='All'?' active':'');
+    el.textContent = c;
+    el.setAttribute('aria-pressed', c==='All'?'true':'false');
+    el.onclick = ()=>{ SELECTED_CAT = c; Array.from(wrap.children).forEach(ch=>ch.classList.remove('active')); el.classList.add('active'); el.setAttribute('aria-pressed','true'); renderProducts(); }
+    wrap.appendChild(el);
+  });
+})();
+
+/* ---------- render products (fast paint already has few cards, but this updates dynamic lists) ---------- */
+function renderProducts(){
+  const grid = $('grid');
+  // if grid already contains pre-rendered children, we'll keep them but also ensure they can add to cart.
+  // Simpler: rebuild from PRODUCTS filtered by category/search so user sees consistent state.
+  const qterm = $('q').value.trim().toLowerCase();
+  const list = PRODUCTS.filter(p => (SELECTED_CAT==='All' || p.category===SELECTED_CAT) && (p.name.toLowerCase().includes(qterm) || p.category.toLowerCase().includes(qterm)));
+  grid.innerHTML = '';
+  list.forEach(p=>{
+    const art = document.createElement('article');
+    art.className='prod';
+    art.tabIndex=0;
+    art.dataset.id = p.id;
+    art.innerHTML = `
+      <div class="prod-top">
+        <div class="badge-emoji">${p.emoji}</div>
+        <div class="pmeta">
+          <div class="pname">${p.name}</div>
+          <div class="pcat">${p.category} • Fresh</div>
+        </div>
+      </div>
+      <div class="pfoot">
+        <div>
+          <div class="price">${format(p.price)}</div>
+          <div class="sm">per kg</div>
+        </div>
+        <div>
+          <div class="qty" aria-hidden="true">
+            <button class="dec" title="decrease">−</button>
+            <div style="padding:6px 12px;font-weight:800;background:var(--glass);border-radius:8px">1</div>
+            <button class="inc" title="increase">+</button>
+          </div>
+          <div style="height:6px"></div>
+          <button class="btn add-btn" data-add="${p.id}">Add</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(art);
+  });
+}
+
+/* ---------- cart UI ---------- */
+function saveCart(){ localStorage.setItem('kx_cart', JSON.stringify(CART)); updateCartUI(); }
+function updateCartUI(){
+  const count = CART.reduce((s,i)=>s+i.qty,0);
+  const badge = $('cartCount');
+  if(count>0){ badge.style.display='block'; badge.textContent=count; } else badge.style.display='none';
+  const items = $('cartItems');
+  if(CART.length===0){ items.innerHTML = '<div style="color:var(--muted)">Your cart is empty</div>'; $('total').textContent = format(0); return; }
+  items.innerHTML = '';
+  CART.forEach(it=>{
+    const row = document.createElement('div');
+    row.className='cart-row';
+    row.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="font-size:22px">${it.emoji}</div>
+        <div>
+          <div style="font-weight:800">${it.name}</div>
+          <div class="sm">₹${it.price} • qty ${it.qty}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div style="font-weight:900">${format(it.qty*it.price)}</div>
+        <div style="display:flex;gap:6px">
+          <button class="dec-item" data-id="${it.id}" aria-label="decrease">−</button>
+          <button class="inc-item" data-id="${it.id}" aria-label="increase">+</button>
+        </div>
+      </div>
+    `;
+    items.appendChild(row);
+  });
+  const total = CART.reduce((s,i)=>s+i.qty*i.price,0);
+  $('total').textContent = format(total);
+}
+
+/* ---------- cart actions (delegated) ---------- */
+document.addEventListener('click', (e)=>{
+  const add = e.target.closest('[data-add]');
+  if(add){
+    const id = Number(add.getAttribute('data-add'));
+    addToCart(id, 1);
+    return;
+  }
+  if(e.target.classList.contains('inc-item')){
+    const id = Number(e.target.dataset.id); changeQty(id, +1); return;
+  }
+  if(e.target.classList.contains('dec-item')){
+    const id = Number(e.target.dataset.id); changeQty(id, -1); return;
+  }
+});
+
+function addToCart(id, qty=1){
+  const prod = PRODUCTS.find(p=>p.id===id);
+  if(!prod) return;
+  const item = CART.find(i=>i.id===id);
+  if(item) item.qty += qty;
+  else CART.push({...prod, qty});
+  saveCart();
+  toast('Added to cart');
+}
+
+function changeQty(id, delta){
+  const it = CART.find(i=>i.id===id);
+  if(!it) return;
+  it.qty += delta;
+  if(it.qty <= 0) CART = CART.filter(x=>x.id!==id);
+  saveCart();
+}
+
+/* ---------- drawer open/close ---------- */
+const drawer = $('drawer');
+$('cartFab').addEventListener('click', ()=>{ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); updateCartUI(); });
+$('cartFab').addEventListener('keydown', e=>{ if(e.key==='Enter') drawer.classList.add('open') });
+$('closeDrawer').addEventListener('click', ()=>{ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); });
+$('clearCart').addEventListener('click', ()=>{ CART = []; saveCart(); toast('Cart cleared') });
+
+/* ---------- checkout (calls backend if available) ---------- */
+$('checkoutBtn').addEventListener('click', async ()=>{
+  if(CART.length===0){ toast('Cart is empty'); return; }
+  // simple address selection check
+  if(!LOCATION){ // show a lightweight confirm to request location
+    if(!confirm('You have not allowed location. Proceed with checkout without precise location?')) return;
+  }
+  // build simple order payload
+  const items = CART.map(i=>({product_id:i.id, qty:i.qty}));
+  const payload = { address_id: 0, items, location: LOCATION || null };
+  try{
+    const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if(res.ok){ const j = await res.json(); CART = []; saveCart(); drawer.classList.remove('open'); toast('Order placed — id ' + (j.order_id||'—')); }
+    else {
+      const j = await res.json().catch(()=>({detail:'server error'}));
+      toast('Order failed: '+(j.detail||'server error'));
+    }
+  }catch(err){
+    // backend not reachable — show offline-friendly behaviour
+    localStorage.setItem('kx_pending_order', JSON.stringify({payload, ts:Date.now()}));
+    CART = []; saveCart(); drawer.classList.remove('open'); toast('Offline: order saved locally. It will be retried from admin panel.');
+  }
+});
+
+/* ---------- search + small UX ---------- */
+$('q').addEventListener('input', (e)=>{
+  $('clear').style.display = e.target.value ? 'inline-block' : 'none';
+  renderProducts();
+});
+$('clear').addEventListener('click', ()=>{ $('q').value=''; $('clear').style.display='none'; renderProducts(); });
+
+$('buyNow').addEventListener('click', ()=>{ window.scrollTo({top: document.querySelector('.grid').offsetTop-12, behavior:'smooth'}); });
+
+/* ---------- location ---------- */
+$('locBtn').addEventListener('click', ()=>{
+  if(!navigator.geolocation){ toast('Geolocation not supported'); return; }
+  navigator.geolocation.getCurrentPosition((pos)=>{
+    LOCATION = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    $('locText').textContent = `Lat ${LOCATION.lat.toFixed(3)}, Lng ${LOCATION.lng.toFixed(3)}`;
+    toast('Location detected');
+    // optionally send to backend (best-effort)
+    fetch('/api/location', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(LOCATION) }).catch(()=>{});
+  }, err => {
+    toast('Location permission denied');
+  }, {timeout:8000});
+});
+
+/* ---------- item quantity controls inside each card (delegation for inc/dec in product card) ---------- */
+document.addEventListener('click', (e)=>{
+  const inc = e.target.closest('.inc');
+  const dec = e.target.closest('.dec');
+  if(inc || dec){
+    const card = e.target.closest('.prod');
+    if(!card) return;
+    const viewQty = card.querySelector('.qty > div');
+    let v = Number(viewQty.textContent||'1');
+    v = inc ? v+1 : Math.max(1, v-1);
+    viewQty.textContent = v;
+    // update button "Add" to add v quantity (we set dataset)
+    const addBtn = card.querySelector('[data-add]');
+    if(addBtn) addBtn.dataset.qty = v;
+  }
+});
+
+/* ---------- hydration + first paint friendly ---------- */
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderProducts();
+  updateCartUI();
+
+  // small progressive enhancement: try to fetch latest products in background (non-blocking)
+  fetch('/api/products').then(r=>r.json()).then(remote=>{
+    if(Array.isArray(remote) && remote.length>0){
+      // merge remote data lightly with our PRODUCTS by id
+      remote.forEach(rp=>{
+        const idx = PRODUCTS.findIndex(p=>p.id===rp.id);
+        if(idx>=0) PRODUCTS[idx] = {...PRODUCTS[idx], ...rp};
+        else PRODUCTS.push(rp);
+      });
+      renderProducts();
+    }
+  }).catch(()=>{/* silently ignore network error */});
+
+  // check if pending order exists (from offline checkout)
+  const pend = localStorage.getItem('kx_pending_order');
+  if(pend) toast('You have a pending offline order (will be retried)');
+});
+
+/* ---------- keyboard a11y: ESC closes drawer ---------- */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); } });
+
+</script>
+</body>
+</html>
